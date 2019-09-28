@@ -1,1 +1,2 @@
-![mysql结构](E:\mysqldoc\images\mysql结构.jpg)
+![](https://github.com/heartccace/mysql/blob/master/images/mysql结构.jpg))
+
