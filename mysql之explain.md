@@ -6,8 +6,12 @@ select 查询的序列号包含一组数字，表示查询中执行select子句�
 
 1. id相同执行顺序由上至下
 
-   ![]
+   ![](https://github.com/heartccace/mysql/blob/master/images/explain之id相同.jpg)
 
 2. id不同，如果是子查询，id的序号会递增，id值越大优先级越高，越先被执行
 
+   ![](https://github.com/heartccace/mysql/blob/master/images/explain之id不同.jpg)
+
 3. id值不同同时存在，值越高越先被执行，相同从上至下一次执行
+
+   ![](https://github.com/heartccace/mysql/blob/master/images/explain之id相同又不同.jpg)
