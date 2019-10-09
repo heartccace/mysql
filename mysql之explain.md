@@ -39,3 +39,29 @@ select 查询的序列号包含一组数字，表示查询中执行select子句�
 2. 作用:查询类型，主要用于区分普通查询、联合查询、子查询等复杂查询
 
 ​    
+
+三、explain之type（https://dev.mysql.com/doc/refman/8.0/en/explain-output.html#explain-join-types）
+
+1. 取值情况
+
+   ![](https://github.com/heartccace/mysql/blob/master/images/explain之type.jpg)
+
+   查询使用何种类型，从最好到最差
+
+   system > const > eq_ref > ref > rang  > index > all(常用)
+
+   system > const > eq_ref > ref > fulltext > ref_or_null > index_merge > unique_subquery > index_subquery > rang  > index > all(所有)
+
+   优化至少得到rang，最好达到ref
+
+2. 取值详解
+
+   -  system: 表只有一行记录（等于系统表），这是const类型的特列，平时不会吃先，这个也可以忽略不记
+   - const：表示通过索引一次就找到了，const用于比较primary key或者unique索引。因为只匹配一行数据，所以很快，如将主键位于where列表中（如where id =10），Mysql就能将该查询转换为一个常量；
+   - eq_ref：唯一性索引，对于每个索引键，表中只有一条记录与之匹配。常见与主键或唯一索引扫描
+   - ref：非唯一性索引扫描，返回匹配单独值的所有行，本质上也是一种索引访问，他返回所有匹配某个单独值的行，然而他可能会找到很多符合条件的行，所以它属于查找和扫描的混合体
+   - range：只检索给定范围的行，使用一个索引来选择行。key列显示使用哪个索引，一般就是在你的where语句中初爱西安between、<、>、in等查询，这种范围扫描索引比全表要好，因为它只需要开始于索引的某一点，而结束与另一点，不用扫描全部索引。
+   - index：index与all的区别为index'里欸选哪个只遍历索引树。通常逼all快，因为索引文件通常比数据文件小（也就是说虽然all'和index都是读全表，但index是从索引中读取，all是从硬盘中读取）
+   - 
+
+   
