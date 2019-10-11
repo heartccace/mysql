@@ -98,3 +98,28 @@ select 查询的序列号包含一组数字，表示查询中执行select子句�
    			![](https://github.com/heartccace/mysql/blob/master/images/explain案例分析.jpg)
 
    执行顺序：首先查询t2表—> t1 (查询t1结果形成一张衍生表derived3) —> t3 —> derived3 —> union
+
+### 六、索引优化
+
+1. 单边情况
+
+   - 使用联合索引时，mysql采用BTree来存储索引。进行查询排序时是按照索引的先后顺序进行排序，当其中索引出现相同值的时候采用另外的索引。此时如果where后跟的条件被加入索引，且使用范围查询（in，<,>）等会导致索引失效，导致查询性能降低。
+     案例：
+
+     ![](https://github.com/heartccace/mysql/blob/master/images/单表索引未优化.jpg)
+
+     ![](https://github.com/heartccace/mysql/blob/master/images/单表未优化结果.jpg)
+
+     本案例采用联合主键，根据category_id、comments、views三个字段组成一个idx_article_ccv主键，通过sql（select id from article where category_id=1 and comments >1 order by views desc limit 1）查询，导致排序未使用到主键而采用外部索引排序，导致性能下降。
+
+     原因分析：其中comments > 1这个条件会使索引失效导致
+
+     解决方案：索引元素去掉comments，只根据categor_id和views创建索引。
+
+     解决后：
+
+     ![](https://github.com/heartccace/mysql/blob/master/images/单表优化索引.jpg)
+
+     ![](https://github.com/heartccace/mysql/blob/master/images/单表优化结果.jpg)
+
+2. 
