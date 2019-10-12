@@ -128,3 +128,91 @@ select 查询的序列号包含一组数字，表示查询中执行select子句�
 
    - 当采用left join时，优化方案时在右表的关联字段上建立索引。
    - 当采用right join时，优化方案实在左表关联字段上建立索引
+
+七、索引失效
+
+1. 全值匹配
+
+2. 最佳左前缀法则
+
+   ![](https://github.com/heartccace/mysql/blob/master/images/复合索引失效.jpg)
+
+   **如果索引了多列，要遵守最左前缀法则。指的是查询从索引的最左前列开始并且不跳过索引中的列**否则会导致索引失效
+
+3. 不在索引列上做任何操作（计算、函数、（自动or手动类型转化）），会导致索引失效而全表扫描
+
+4. 尽量使用覆盖索引（只访问索引的查询（索引列和查询列一致）），减少select *
+
+5. 存储引擎不能使用索引中范围条件右边的列（范围右边全失效）
+
+6. mysql在使用不等于（!=,<>）的时候无法索引导致全表扫描
+
+7. is null， is not null也无法使用索引
+
+8. like以通配符开头（‘%abc’）mysql索引失效导致全表扫描
+
+   ‘%...%’导致索引失效，可以通过覆盖索引解决问题。前提查询字段必须与覆盖索引一致（除在自增id外）
+
+9. 字符串不加单引号导致索引失效
+
+10. 少用or，用它来连接时索引失效
+
+### 八、总结
+
+1. 慢查询的开启并捕获
+2. explain + 慢sql分析
+3. show profile查询SQL在mysql服务器里面的执行细节和生命周期
+4. SQL数据库服务器的参数调优
+5. exists和in的区别
+   - ​	SELECT * FROM A where exists(select  1 from B where B.id=A.id)当A的数据集小于B的数据集时exists优于in
+
+### 九、order by排序优化
+
+1. ​	order by 子句，尽量使用index方式排序，避免使用filesort
+
+2. 尽可能在索引列上完成排序操作，遵照索引建的最佳左前缀
+
+3. 如果不在索引列上，filesort有两种算法
+
+4. mysql就要启动双路排序和单路排序
+
+   总结：
+
+   - mysql两种排序：文件排序或者扫码有序索引排序
+
+   - mysql能为排序与查询使用相同的索引
+
+     KEY a_b_c(a,b,c)
+
+     — order by a
+
+     — order by a，b
+
+     — order by a,b,c
+
+     — order by a DESC, b desc, c desc
+
+   - 如果where使用索引的最左前缀定义为常量，则order by能使用索引
+
+     — where  a = const ORDER BY b,c
+
+     — where  a = const and b=const ORDER BY c
+
+     — where  a = const and b > const ORDER BY b,c
+
+     不能使用索引进行排序
+     —  order by a asc, b desc, c desc /* 排序不一致 */
+
+     — where g=const order by  b ,c /* 丢失索引a */
+
+     — where a=const order by  c /* 丢失索引b */
+
+     — where a in (....) order by  b ,c /* 杜宇排序来说，多个相等条件也是范围查询*/
+
+### 十、慢查询
+
+1. 开启慢查询
+   - show variables like "%slow_query_log%"
+   - set globle slow_query_log=1(只能当前数据库生效)
+   - 永久生效（在my.ini中配置[sysqld]下增加 show_query_log =1 show_query_log_file="保存位置"）
+2. 查看慢sql记录时间（show variables like 'long_query_time'）（set gloal long_query_time=3）设置慢查询记录sql时间为3s
