@@ -1,4 +1,5 @@
 MySQL官方文档地址（https://dev.mysql.com/doc/refman/5.7/en/explain.html）
+https://dev.mysql.com/doc/refman/5.7/en/explain-output.html
 
 一、explain + sql执行后显示内容
 
