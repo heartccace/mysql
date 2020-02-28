@@ -85,7 +85,7 @@ select 查询的序列号包含一组数字，表示查询中执行select子句�
 
      案列：
 
-     ​	![][explain之useing template.jpg](https://github.com/heartccace/mysql/blob/master/images/explain之useing template.jpg)
+     ​	![](https://github.com/heartccace/mysql/blob/master/images/explain之useing template.jpg)
 
    - Using index：表示相应的select操作中使用了覆盖索引，避免访问了表的数据行，效率不错！如果同时出现using where，表明索引被用来执行索引键值的查找。如果没有出现using where，表明索引用来读取数据而非执行查找动作。
 
